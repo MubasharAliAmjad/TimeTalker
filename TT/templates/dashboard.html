@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dasborad{% endblock title %} 
+{% block main-content %}
+
+
+
+<div class="main-container" style="display: flex; flex-direction: row; height: 100vh;">
+
+    <div class="sidebar-channel" style="background-color: #F6F6F9; flex: 1; height: 100vh; display: flex; flex-direction: column;">
+        
+        <!-- First div with grids -->
+        <div class="grid-div" style=" height: 130px; display: grid; grid-template-columns: 1fr; column-gap:5px; margin-top: 20px; margin-left: 20px; ">
+          <div><h3>Messages</h3></div>
+          <div>
+            <input type="text" id="searchInput" placeholder="Search here" style="width: 200px">
+            <div id="searchResults"></div>
+          </div>
+        </div>
+
+        {% include "addroom.html" %}
+      
+        <!-- Second div -->
+        <div class="column-grid" id="column-grid" style="margin-left: 20px;">
+            <!-- Dynamic grid items will be added here -->
+            <p>Rooms <button id="openModelBtn">Open Form</button><i class="fa fa-plus" style="font-size:18px;color:red; display: inline; margin-left: 20px;"></i></p>
+
+            {% for room in allrooms %}
+              <div style="display: flex; flex-direction: row; margin-bottom: 3px;  border-bottom: 1px solid rgba(0, 0, 0, 0.2);">
+                  <a href="{% url 'displayroom' room.id %}">
+                    <div class="image-container">
+                        <img src="{% static 'person.jpg' %}" alt="" class="round-image">
+                    </div>
+                  </a>
+                  <a href="{% url 'displayroom' room.id %}" style="text-decoration: none;">
+                    <p style="margin-top: 10px; margin-left: 10px; color: black; ">{{room.name}}</p>
+                  </a>
+              </div>
+            {% endfor %}
+        </div>
+
+
+      <script>
+
+          document.addEventListener("DOMContentLoaded", function () {
+                  var addRoomModel = document.querySelector(".add-room-model");
+                  addRoomModel.style.display = "none";
+              });
+          // Get references to the model overlay and buttons
+          var modelOverlay = document.querySelector(".model-overlay");
+          var openModelBtn = document.getElementById("openModelBtn");
+          var closeModelBtn = document.getElementById("closeModelBtn");
+
+          // Get reference to the add-room-model
+          var addRoomModel = document.querySelector(".add-room-model");
+
+          // Function to open the model
+          function openModel() {
+              modelOverlay.style.display = "flex"; // Use flex display to center
+              addRoomModel.style.display = "block"; // Display the add-room-model content
+          }
+
+          // Function to close the model
+          function closeModel() {
+              modelOverlay.style.display = "none";
+              addRoomModel.style.display = "none"; // Hide the add-room-model content
+          }
+
+          // Event listeners to open and close the model
+          openModelBtn.addEventListener("click", openModel);
+          closeModelBtn.addEventListener("click", closeModel);
+
+          // Close the model if the user clicks outside of it
+          window.addEventListener("click", function(event) {
+              if (event.target == modelOverlay) {
+                  closeModel();
+              }
+          });
+
+       </script>
+
+        
+        <!-- Third div -->
+        <div style="flex: 1; margin-left: 20px; margin-top: 20px;">
+            Direct messages
+        </div>
+    </div>
+      
+
+
+
+
+
+
+
+    <div class="chating" style="background-color: white; flex: 4; display: flex; flex-direction: column;">
+
+
+        <!-- First div for room information (it can be classified into two divs, so we can also add call logo) -->
+            <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.2); display: flex; flex-direction: row; margin-bottom: 5px; margin-top: 20px;">
+                <div class="image-container">
+                  
+                    <img src="{% static 'person.jpg' %}" alt="" class="round-image">
+                </div>
+                <p style="margin-top: 10px; margin-left: 10px;">{{room_name}}</p>
+                
+            </div>
+
+        <!-- Second div for Chat -->
+        <div style="flex: 2;">
+            <div  class="chat-container" id="id_chat_item_container">
+                <!-- Messages will be dynamically added here -->
+
+                <div class="chat-messages space-y-3" id="chat-messages">
+                  {% for message in messages %}
+                    <div class="p-4 bg-gray-200 rounded-xl">
+                      <p class="font-semibold">{{message.username}}</p>
+                      <p>{{message.content}}</p>
+                      <p>{{message.timeStamp|date:"g:i A"}}</p>
+                    </div>
+                  {% endfor %}
+                </div>
+
+            </div>        
+        </div>        
+
+        <!-- Third div for Typing -->
+        <div class="message-input">
+            <input type="text" id="id_message_send_input" placeholder="Type your message...">
+            <button id="id_message_send_button" type="submit">Send</button>
+        </div>
+
+
+    </div>
+    {{ room_name|json_script:"room-name" }}
+</div>
+    
+<script>
+  const roomName = JSON.parse(document.getElementById('room-name').textContent);
+  const userName = "{{ request.user.username }}";
+  // Addedd from youtube video
+  //const userName = JSON.parse(document.getElementById('json-username').textContent);
+  console.log(roomName)
+  const chatSocket = new WebSocket(
+      'ws://'
+      + window.location.host
+      + '/ws/chat/'
+      + roomName
+      + '/'
+  );
+
+  chatSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      let html  = '<div class="p-4 bg-gray-200 rounded-xl">';
+        html += '<p class="font-semibold">'+ data.username + '</p>';
+        html +=  '<p>' + data.message + '</p></div>';
+
+        document.querySelector('#chat-messages').innerHTML += html;
+  };
+
+  chatSocket.onclose = function (e) {
+      console.log("Something unexpected happened !");
+  };
+
+  document.querySelector("#id_message_send_input").focus();
+  document.querySelector("#id_message_send_input").onkeyup = function (e) {
+      if (e.keyCode == 13) {
+          document.querySelector("#id_message_send_button").click();
+      }
+  };
+
+  document.querySelector("#id_message_send_button").onclick = function (e) {
+      var messageInput = document.querySelector(
+          "#id_message_send_input"
+      ).value;
+      chatSocket.send(JSON.stringify({ 'message': messageInput,
+       'username': userName,
+      'room': roomName }));
+      document.querySelector('#id_message_send_input').value = '';
+      messageInput.value = '';
+
+      // Send the sent message to your Django view to save it in the database
+      saveMessageToDatabase(messageInput);
+  };
+
+  function saveMessageToDatabase(message) {
+      // Use AJAX to send the message data to your Django view
+      fetch('/save_message/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}', // Include the CSRF token
+          },
+          body: JSON.stringify({ message: message }),
+      })
+      .then(response => {
+          if (response.status === 200) {
+              // Message sent successfully, you can handle the response here
+          } else {
+              // Handle any errors that occur during the AJAX request
+              console.error('Error sending message to the server');
+          }
+      })
+      .catch(error => {
+          console.error('Error sending message:', error);
+      });
+  }
+</script>
+
+      
+
+{% endblock main-content %}

@@ -1,0 +1,131 @@
+
+.model {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #F6F6F9;
+    justify-content: center;
+    align-items: center;
+}
+
+.model-content {
+    background-color: #F6F6F9;
+    padding: 20px;
+    border-radius: 5px;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    margin-bottom: 5px;
+}
+
+        /* Styling for the close button */
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+----------------------------------------------------------------------
+.chat-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    overflow-y: scroll;
+    max-height: 400px;
+}
+
+/* Style individual messages */
+.message {
+    display: flex;
+    justify-content: flex-start; /* Align messages to the left by default */
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Style sender's messages on the right */
+.sender {
+    justify-content: flex-end; /* Align messages to the right for senders */
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Style the message input */
+.message-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.message-input input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+.message-input button {
+    padding: 10px 20px;
+    background-color: green;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Style receiver's message on the left */
+.receiver {
+    align-self: flex-start;
+    text-align: left;
+    background-color: #e0e0e0;
+    border-radius: 10px 10px 10px 0;
+    padding: 10px;
+}
+
+/* Style the message timestamp */
+.timestamp {
+    font-size: 12px;
+    color: #777;
+    text-align: right;
+}
+
+
+.image-container {
+    width: 50px; /* Set the desired width for the container */
+    height: 50px; /* Set the desired height for the container */
+    overflow: hidden;
+    border-radius: 2px; /* Create a circular clipping mask */
+}
+
+/* Style the round image */
+.round-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Maintain the aspect ratio and cover the container */
+    border: 2px solid #fff; /* Add a border to the circular image */
+    border-radius: 50%; /* Ensure the image is fully circular */
+}
+
+.column-grid {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        height: auto; /* Remove fixed height to allow dynamic content */
+        }
+
+.column-grid .grid-item {
+    width: 100px;
+    margin: 5px;
+    background-color: #ccc;
+    text-align: center;
+    padding: 10px;
+}
+
+        
