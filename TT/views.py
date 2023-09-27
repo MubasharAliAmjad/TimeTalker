@@ -70,9 +70,17 @@ class Profile(View):
         else:
             return render(request, 'profile.html', {'form': form.errors})
 
+class Dashboard(View):
+    def get(self, request):
+        allrooms = Room.objects.filter(roomMembers=request.user)
+    
+        context = {
+            'allrooms': allrooms,
+            'user_rooms': Room.objects.filter(roomMembers=request.user),  # Get all user's rooms
+        }
+        return render(request, "dashboard.html", context)
 
-def dashboard(request):
-    if request.method == "POST":
+    def post(self, request):
         room_name = request.POST.get('room-name-input')
         if room_name:
             try:
@@ -104,13 +112,6 @@ def dashboard(request):
                 }
                 return render(request, "dashboard.html", context)
 
-    allrooms = Room.objects.filter(roomMembers=request.user)
-    
-    context = {
-        'allrooms': allrooms,
-        'user_rooms': Room.objects.filter(roomMembers=request.user),  # Get all user's rooms
-    }
-    return render(request, "dashboard.html", context)
         
 
 def displayroom(request, pk):
